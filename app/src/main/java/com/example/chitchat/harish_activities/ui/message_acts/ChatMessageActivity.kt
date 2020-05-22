@@ -11,7 +11,7 @@ import com.example.chitchat.adapter.ChatMessageAdapter
 import com.example.chitchat.databinding.ActivityChatMessageBinding
 import com.example.chitchat.model.Message
 import com.example.chitchat.model.User
-import com.example.chitchat.ui.FirstScreen
+import com.example.chitchat.harish_activities.ui.FirstScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

@@ -12,7 +12,7 @@
         <activity android:name=".ui.message_acts.ChatMessageActivity"
             android:theme="@style/myStyle"/>
         <activity
-            android:name=".ui.FirstScreen"
+            android:name=".harish_activities.ui.FirstScreen"
             android:label="@string/title_activity_first_screen"
             android:theme="@style/myStyle"/>
         <activity android:name=".LoginSignUp"

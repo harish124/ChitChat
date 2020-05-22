@@ -1,5 +1,7 @@
-package com.example.chitchat.ui
+package com.example.chitchat.harish_activities.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -16,10 +18,10 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.squareup.picasso.Picasso
 import frame_transition.Transition
 import kotlinx.android.synthetic.main.activity_first_screen.*
 import print.Print
+
 
 class FirstScreen : AppCompatActivity() {
 
@@ -101,6 +103,25 @@ class FirstScreen : AppCompatActivity() {
                 mAuth.signOut()
                 p.sprintf("Logged Out Successfully")
                 transition.goTo(LoginSignUp::class.java)
+            }
+            R.id.shareChitChat->{
+                var shareLink=""
+                database.getReference("ShareAppLink")
+                    .addListenerForSingleValueEvent(object :ValueEventListener{
+                        override fun onCancelled(p0: DatabaseError) {
+                            TODO("Not yet implemented")
+                        }
+
+                        override fun onDataChange(p0: DataSnapshot) {
+                            shareLink=p0.value.toString()
+                            val intentSms = Intent(Intent.ACTION_SEND)
+                            intentSms.setType("text/plain")
+                            intentSms.putExtra("sms_body", shareLink)
+                            startActivity(intentSms)
+                        }
+
+                    })
+
             }
         }
         return super.onOptionsItemSelected(item)

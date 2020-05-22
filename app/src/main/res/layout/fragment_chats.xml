@@ -23,7 +23,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:context=".ui.FragmentChats">
+            tools:context=".harish_activities.ui.FragmentChats">
 
             <!-- TODO: Update blank fragment layout -->
             <androidx.recyclerview.widget.RecyclerView

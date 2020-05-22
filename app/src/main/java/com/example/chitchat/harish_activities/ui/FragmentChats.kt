@@ -1,4 +1,4 @@
-package com.example.chitchat.ui
+package com.example.chitchat.harish_activities.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +14,7 @@ import com.example.chitchat.adapter.FragmentChatsRVAdapter
 import com.example.chitchat.R
 import com.example.chitchat.databinding.FragmentChatsBinding
 import com.example.chitchat.model.User
-import com.example.chitchat.ui.message_acts.Message
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -145,7 +145,7 @@ class FragmentChats : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        fetchUsers()
+        //fetchUsers()
     }
 
 }

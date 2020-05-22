@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.FirstScreen"
+        tools:context=".harish_activities.ui.FirstScreen"
         android:background="@color/white">
 
         <com.google.android.material.appbar.AppBarLayout

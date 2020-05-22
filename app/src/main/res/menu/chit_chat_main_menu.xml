@@ -6,6 +6,10 @@
         android:id="@+id/menuLogOut"
         android:title="Logout"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/shareChitChat"
+        android:title="Share App"
+        app:showAsAction="never"/>
 
 
 </menu>

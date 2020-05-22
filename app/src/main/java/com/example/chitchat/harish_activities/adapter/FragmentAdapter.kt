@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.example.chitchat.ui.GroupsFragment
-import com.example.chitchat.ui.FragmentChats
+import com.example.chitchat.harish_activities.ui.FragmentChats
 import com.example.chitchat.ui.SettingsFragment
 
 class FragmentAdapter(fragmentManager:FragmentManager):FragmentPagerAdapter(fragmentManager) {

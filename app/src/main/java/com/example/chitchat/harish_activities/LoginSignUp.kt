@@ -3,11 +3,10 @@ package com.example.chitchat
 import android.app.Activity
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.chitchat.databinding.ActivityMainBinding
 import com.example.chitchat.model.User
-import com.example.chitchat.ui.FirstScreen
+import com.example.chitchat.harish_activities.ui.FirstScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import frame_transition.Transition
@@ -25,7 +24,7 @@ class LoginSignUp : Activity() {
     private val mAuth = FirebaseAuth.getInstance()
     private val transition= Transition(this)
     private val database= FirebaseDatabase.getInstance()
-    private val uid=mAuth.currentUser?.uid.toString() ?: "404"
+    private var uid=mAuth.currentUser?.uid.toString() ?: "404"
 
 
 
@@ -55,14 +54,13 @@ class LoginSignUp : Activity() {
                         Log.d("MainActivity", "createUserWithEmail:success")
                         p.sprintf("Sign Up Successfull")
 
-
-
+                        uid=FirebaseAuth.getInstance().uid.toString()
                         val user= User("Harish","",""
                             ,uid, "offline")
 
                         database.reference
                             .child("Users")
-                            .child(uid)
+                            .child(FirebaseAuth.getInstance().uid.toString())
                             .setValue(user)
                             .addOnCompleteListener{
                                 if(it.isSuccessful){
