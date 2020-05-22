@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.024">
+
+            <TextView
+                android:id="@+id/txt"
+                android:layout_width="wrap_content"
+                android:text="Hello MA!dfghjkjhfxcvbnmncxcvbnmnbvcxmnbvcvbnbvcnnvcxcvbnbvcxcvbnbvckjhgfdscjhgfdcvnmnvcxcvbn"
+                android:layout_toStartOf="@+id/fromImg"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:paddingEnd="25dp"
+                android:visibility="visible"
+                android:textColor="@color/white"
+                android:background="@drawable/rounded_from_msg_view"
+                android:maxWidth="240dp" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/fromImg"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="5dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/vijay" />
+
+            <TextView
+                android:id="@+id/tick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="40dp"
+                android:text="Seen"
+                android:visibility="invisible"
+                android:textSize="10sp"
+                android:layout_below="@+id/txt"/>
+
+
+
+        </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
