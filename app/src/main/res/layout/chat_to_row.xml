@@ -44,6 +44,7 @@
                 android:background="@drawable/rounded_to_msg_view"
                 android:maxWidth="240dp" />
 
+
         </RelativeLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

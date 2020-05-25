@@ -1,4 +1,4 @@
-package com.example.chitchat.adapter
+package com.example.chitchat.harish_activities.adapter
 
 import android.content.Context
 import android.content.Intent
@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.chitchat.R
 import com.example.chitchat.databinding.CardUsersBinding
 import com.example.chitchat.model.User
-import com.example.chitchat.ui.message_acts.ChatMessageActivity
+import com.example.chitchat.harish_activities.ui.message_acts.ChatMessageActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -60,7 +60,7 @@ class FragmentChatsRVAdapter(var products:ArrayList<User>):RecyclerView.Adapter<
         fetchLastMsg(user.uid,holder.binding.lastMsg)
 
         holder.binding.userCard.setOnClickListener {
-            val intent= Intent(ctx,ChatMessageActivity::class.java)
+            val intent= Intent(ctx, ChatMessageActivity::class.java)
             intent.putExtra("UserObj",products[position])
             ctx!!.startActivity(intent)
         }
@@ -75,7 +75,10 @@ class FragmentChatsRVAdapter(var products:ArrayList<User>):RecyclerView.Adapter<
 
             override fun onDataChange(p0: DataSnapshot) {
                 if(p0.exists()){
+                    textView.visibility=View.VISIBLE
                     textView.text=p0.value.toString()
+                }else{
+                    textView.visibility=View.INVISIBLE
                 }
 
             }

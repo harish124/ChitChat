@@ -1,7 +1,6 @@
 package com.example.chitchat.harish_activities.ui
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -32,29 +31,29 @@ class FirstScreen : AppCompatActivity() {
     private val mAuth = FirebaseAuth.getInstance()
     private val transition= Transition(this)
     private val database= FirebaseDatabase.getInstance()
+    private val myUid=mAuth.uid
 
     private fun init(){
+        binding=DataBindingUtil.setContentView(this,
+            R.layout.activity_first_screen
+        )
+        setSupportActionBar(toolbar_main)
+        supportActionBar!!.title="ChitChat"
         binding!!.viewPager.adapter=FragmentAdapter(supportFragmentManager)
         binding!!.tabLayout.setupWithViewPager(viewPager)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding=DataBindingUtil.setContentView(this,
-            R.layout.activity_first_screen
-        )
-        setSupportActionBar(toolbar_main)
 
-        supportActionBar!!.title="ChitChat"
         init()
-
         fetchDisplayNameAndProfile()
 
     }
 
     private fun fetchDisplayNameAndProfile() {
         database.getReference("Users")
-            .child(mAuth.currentUser!!.uid)
+            .child(myUid.toString())
             .addValueEventListener(object : ValueEventListener{
                 override fun onCancelled(p0: DatabaseError) {
                     TODO("Not yet implemented")
@@ -78,10 +77,7 @@ class FirstScreen : AppCompatActivity() {
             })
     }
 
-    private fun setStatus(status:String="Offline"){
-        val ref=database.getReference("Users/${mAuth.uid}/status")
-        ref.setValue(status)
-    }
+    private fun setStatus(status:String="Offline")= database.getReference("Users/${myUid}/status").setValue(status)
 
     override fun onResume() {
         super.onResume()
@@ -97,31 +93,38 @@ class FirstScreen : AppCompatActivity() {
         menuInflater.inflate(R.menu.chit_chat_main_menu,menu)
         return super.onCreateOptionsMenu(menu)
     }
+
+    private fun shareMyApp(){
+        var shareLink=""
+        database.getReference("ShareAppLink")
+            .addListenerForSingleValueEvent(object :ValueEventListener{
+                override fun onCancelled(p0: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onDataChange(p0: DataSnapshot) {
+                    shareLink=p0.value.toString()
+                    val intentSms = Intent(Intent.ACTION_SEND)
+                    intentSms.setType("text/plain")
+                    intentSms.putExtra("sms_body", shareLink)
+                    startActivity(intentSms)
+                }
+
+            })
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.menuLogOut->{
+                setStatus("Offline")
                 mAuth.signOut()
                 p.sprintf("Logged Out Successfully")
                 transition.goTo(LoginSignUp::class.java)
+
+                finish()
             }
             R.id.shareChitChat->{
-                var shareLink=""
-                database.getReference("ShareAppLink")
-                    .addListenerForSingleValueEvent(object :ValueEventListener{
-                        override fun onCancelled(p0: DatabaseError) {
-                            TODO("Not yet implemented")
-                        }
-
-                        override fun onDataChange(p0: DataSnapshot) {
-                            shareLink=p0.value.toString()
-                            val intentSms = Intent(Intent.ACTION_SEND)
-                            intentSms.setType("text/plain")
-                            intentSms.putExtra("sms_body", shareLink)
-                            startActivity(intentSms)
-                        }
-
-                    })
-
+                shareMyApp()
             }
         }
         return super.onOptionsItemSelected(item)

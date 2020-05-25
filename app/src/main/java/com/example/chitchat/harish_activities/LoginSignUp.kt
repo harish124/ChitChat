@@ -3,6 +3,7 @@ package com.example.chitchat
 import android.app.Activity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.example.chitchat.databinding.ActivityMainBinding
 import com.example.chitchat.model.User
@@ -19,14 +20,12 @@ class LoginSignUp : Activity() {
     private var email=""
     private var pwd=""
 
-
+    private var state=false
     private val p=Print(this)
     private val mAuth = FirebaseAuth.getInstance()
     private val transition= Transition(this)
     private val database= FirebaseDatabase.getInstance()
-    private var uid=mAuth.currentUser?.uid.toString() ?: "404"
-
-
+    private var uid=mAuth.currentUser?.uid.toString()
 
 
     private fun checkAlreadySignedIn(){
@@ -44,59 +43,89 @@ class LoginSignUp : Activity() {
         checkAlreadySignedIn()
 
         binding!!.signInBtn.setOnClickListener{
-            email=binding!!.uname.text.toString()
-            pwd=binding!!.pwd.text.toString()
-            mAuth.createUserWithEmailAndPassword(email, pwd)
-                .addOnCompleteListener(
-                    this
-                ) { task ->
-                    if (task.isSuccessful) {
-                        Log.d("MainActivity", "createUserWithEmail:success")
-                        p.sprintf("Sign Up Successfull")
-
-                        uid=FirebaseAuth.getInstance().uid.toString()
-                        val user= User("Harish","",""
-                            ,uid, "offline")
-
-                        database.reference
-                            .child("Users")
-                            .child(FirebaseAuth.getInstance().uid.toString())
-                            .setValue(user)
-                            .addOnCompleteListener{
-                                if(it.isSuccessful){
-                                    p.sprintf("User data added")
-                                }
-                                else{
-                                    p.sprintf("User data was not added\nError: ${it.exception?.message}")
-                                }
-                            }
-                    } else {
-                        Log.d(
-                            "MainActivity",
-                            "createUserWithEmail:failure",
-                            task.exception
-                        )
-                        p.fprintf("Authentication Failed\nError ${task.exception?.message}")
-
-                    }
-                }
+            signIn()
         }
 
         binding!!.loginBtn.setOnClickListener{
-            email=binding!!.uname.text.toString()
-            pwd=binding!!.pwd.text.toString()
-            mAuth.signInWithEmailAndPassword(email,pwd)
-                .addOnCompleteListener{task->
-                    if(task.isSuccessful){
-                        p.sprintf("Sign In Successfull")
-                        transition.goTo(FirstScreen::class.java)
-                    } else {
-                        p.fprintf("Sign In Failed\nError ${task.exception?.message}")
+            logIn()
+        }
 
-                    }
-                }
+        binding!!.createAccountLabel.setOnClickListener{
+            onCreateAccountLabelClicked()
         }
 
 
+    }
+
+    private fun signIn(){
+        email=binding!!.uname.text.toString()
+        pwd=binding!!.pwd.text.toString()
+        val name=binding!!.name.text.toString()
+        mAuth.createUserWithEmailAndPassword(email, pwd)
+            .addOnCompleteListener(
+                this
+            ) { task ->
+                if (task.isSuccessful) {
+                    Log.d("MainActivity", "createUserWithEmail:success")
+                    p.sprintf("Sign Up Successfull")
+
+                    uid=FirebaseAuth.getInstance().uid.toString()
+                    val user= User(name,"",""
+                        ,uid, "offline")
+
+                    database.reference
+                        .child("Users")
+                        .child(FirebaseAuth.getInstance().uid.toString())
+                        .setValue(user)
+                        .addOnCompleteListener{
+                            if(it.isSuccessful){
+                                p.sprintf("User data added")
+                            }
+                            else{
+                                p.sprintf("User data was not added\nError: ${it.exception?.message}")
+                            }
+                        }
+                    transition.goTo(FirstScreen::class.java)
+                } else {
+                    Log.d(
+                        "MainActivity",
+                        "createUserWithEmail:failure",
+                        task.exception
+                    )
+                    p.fprintf("Authentication Failed\nError ${task.exception?.message}")
+
+                }
+            }
+    }
+    private fun logIn(){
+        email=binding!!.uname.text.toString()
+        pwd=binding!!.pwd.text.toString()
+        mAuth.signInWithEmailAndPassword(email,pwd)
+            .addOnCompleteListener{task->
+                if(task.isSuccessful){
+                    p.sprintf("Sign In Successfull")
+                    transition.goTo(FirstScreen::class.java)
+                } else {
+                    p.fprintf("Sign In Failed\nError ${task.exception?.message}")
+
+                }
+            }
+    }
+
+    private fun onCreateAccountLabelClicked(){
+        if(!state){
+            state=true
+            binding!!.signInBtn.visibility= View.VISIBLE
+            binding!!.name.visibility=View.VISIBLE
+            binding!!.createAccountLabel.text="Already have an account?"
+            binding!!.loginBtn.visibility= View.INVISIBLE
+        }
+        else{
+            state=false
+            binding!!.signInBtn.visibility= View.GONE
+            binding!!.name.visibility=View.GONE
+            binding!!.loginBtn.visibility= View.VISIBLE
+            binding!!.createAccountLabel.text="New Users Click Here!"
+        }
     }
 }

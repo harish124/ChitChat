@@ -57,6 +57,22 @@
                 android:layout_below="@+id/txt"/>
 
 
+            <TextView
+                android:id="@+id/seenTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txt"
+                android:layout_alignParentEnd="true"
+                android:text="Seen"
+                android:textColor="@color/black"
+                android:visibility="invisible"
+                android:layout_marginEnd="40dp"/>
+
+<!--            <TextView-->
+<!--                android:id="@+id/date"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_alignParentRight="true"/>-->
 
         </RelativeLayout>
 

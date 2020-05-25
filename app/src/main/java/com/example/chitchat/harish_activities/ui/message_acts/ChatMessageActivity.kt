@@ -1,37 +1,47 @@
-package com.example.chitchat.ui.message_acts
+package com.example.chitchat.harish_activities.ui.message_acts
 
 import android.app.Activity
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.view.animation.OvershootInterpolator
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.chitchat.R
-import com.example.chitchat.adapter.ChatMessageAdapter
 import com.example.chitchat.databinding.ActivityChatMessageBinding
+import com.example.chitchat.harish_activities.adapter.ChatMessageAdapter
+import com.example.chitchat.harish_activities.ui.FirstScreen
 import com.example.chitchat.model.Message
 import com.example.chitchat.model.User
-import com.example.chitchat.harish_activities.ui.FirstScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import frame_transition.Transition
-
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import print.Print
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class ChatMessageActivity : Activity() {
 
-    private var binding:ActivityChatMessageBinding?=null
+    private var binding: ActivityChatMessageBinding?=null
     private val mAuth = FirebaseAuth.getInstance()
     private val database= FirebaseDatabase.getInstance()
     private val transition=Transition(this)
     private val messages= arrayListOf<Message>()
     private val mAdapter= ChatMessageAdapter(messages)
-
+    private val p= Print(this)
     var user:User?=null
+    private var pos=-1
+    private var swipedMsg:Message?=null
 
 
     private fun fetchUser() = intent.getParcelableExtra<User>("UserObj")
@@ -63,8 +73,10 @@ class ChatMessageActivity : Activity() {
             .centerCrop()
             .into(binding!!.profileImage)
         mAdapter.toUserImgUrl=user!!.profile
+        mAdapter.toUserUid=user!!.uid
 
         configRecyclerView()
+        setItemTouchHelper()
     }
 
 
@@ -92,9 +104,8 @@ class ChatMessageActivity : Activity() {
         binding!!.txtMsg.setText("")
         binding!!.recyclerView.scrollToPosition(messages.size)
 
-        val seenRef=database.getReference("Seen/${mAuth.uid}/${user!!.uid}")
-        seenRef.child("hasSeen")
-            .setValue(0)
+        val seenRef=database.getReference("last_messages/${user!!.uid}/${mAuth.uid}/hasSeen")
+        seenRef.setValue(0)
             .addOnSuccessListener {
                 println("Seen set successfully")
             }
@@ -136,13 +147,98 @@ class ChatMessageActivity : Activity() {
 
     }
 
+    private fun setItemTouchHelper() {
+        val mIth = ItemTouchHelper(
+            object : ItemTouchHelper.SimpleCallback(
+                0, ItemTouchHelper.LEFT
+            ) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    pos=viewHolder.adapterPosition
+                    try{
+                        println("Swipe Worked")
+                    }
+                    catch (e: Exception){
+                        //p.fprintf("Error: ${e.message}")
+                        println("Error: ${e.message}")
+                    }
+                }
+
+                override fun onChildDraw(
+                    c: Canvas,
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    dX: Float,
+                    dY: Float,
+                    actionState: Int,
+                    isCurrentlyActive: Boolean
+                ) {
+
+                    if(actionState==ItemTouchHelper.ACTION_STATE_SWIPE) {
+
+                        pos=viewHolder.adapterPosition
+                        val date=messages[pos].date
+                        viewHolder.itemView.translationX = dX / 4
+                        RecyclerViewSwipeDecorator.Builder(
+                            c,
+                            recyclerView,
+                            viewHolder,
+                            dX,
+                            dY,
+                            actionState,
+                            isCurrentlyActive
+                        )
+                            .addBackgroundColor(
+                                R.color.colorPrimary
+                            )
+                            .addSwipeLeftLabel(date+" "+messages[pos].time)
+
+
+                            .setSwipeLeftLabelColor(Color.WHITE)
+                            .create()
+                            .decorate()
+
+                        println("Directions: dx =$dX, dy= $dY\nisCurrentlyActive = $isCurrentlyActive")
+                    }
+                    else {
+                        super.onChildDraw(
+                            c,
+                            recyclerView,
+                            viewHolder,
+                            dX,
+                            dY,
+                            actionState,
+                            isCurrentlyActive
+                        )
+
+                    }
+                }
+            })
+
+        mIth.attachToRecyclerView(binding!!.recyclerView)
+
+    }
+
+
     private fun constructMessage(key:String=""):Message{
+        val currentDate =
+            SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
+        val currentTime =
+            SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
         return Message(
             key,
             mAuth.uid!!,
             user!!.uid,
             binding!!.txtMsg.text.toString(),
-            System.currentTimeMillis()/1000
+            0,currentDate,
+            currentTime
         )
     }
 
@@ -167,6 +263,13 @@ class ChatMessageActivity : Activity() {
 
         lastMsgRef.setValue(msg.text)
         lastMsgRef2.setValue(msg.text)
+
+    }
+
+
+    override fun onBackPressed() {
+        //super.onBackPressed()
+        binding!!.backBtn.callOnClick()
     }
 
 }

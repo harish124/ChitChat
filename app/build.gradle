@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.chitchat"
-        minSdkVersion 24
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -87,6 +87,9 @@ dependencies {
     //picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
 
+    //RV ItemTouch decorator
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.2'
+
 
 
     //recyclerview
@@ -94,6 +97,12 @@ dependencies {
 
     //material design
     implementation 'com.google.android.material:material:1.1.0'
+
+    // LiveData and view model
+    def lifecycle_version = "2.2.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-livedata:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 
 
 }

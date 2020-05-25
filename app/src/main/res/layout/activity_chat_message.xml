@@ -11,7 +11,7 @@
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.message_acts.ChatMessageActivity"
+        tools:context=".harish_activities.ui.message_acts.ChatMessageActivity"
         android:background="@color/white">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -55,7 +55,7 @@
                         android:layout_centerHorizontal="true"
                         android:text="Megha Akash"
                         android:textStyle="bold"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/white" />
                 </RelativeLayout>
 
             </androidx.appcompat.widget.Toolbar>

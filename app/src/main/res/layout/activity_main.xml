@@ -13,10 +13,18 @@
         tools:context=".LoginSignUp">
 
         <EditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="invisible"
+            android:hint="Name"/>
+        <EditText
             android:id="@+id/uname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:layout_below="@+id/name"
             android:text="har@chitchat.com"
             android:hint="Username"/>
 
@@ -33,6 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/pwd"
             android:text="SignUp"
+            android:visibility="gone"
             android:layout_centerHorizontal="true"/>
         <Button
             android:id="@+id/loginBtn"
@@ -42,6 +51,16 @@
             android:text="Login"
             android:layout_toLeftOf="@+id/signInBtn"
             android:layout_centerHorizontal="true"/>
+
+        <TextView
+            android:id="@+id/createAccountLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:layout_centerHorizontal="true"
+            android:text="New Users Click Here!"
+            android:textStyle="italic"
+            android:layout_below="@+id/loginBtn"/>
 
 
 

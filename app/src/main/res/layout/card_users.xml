@@ -33,6 +33,7 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_centerHorizontal="true"
+                    android:background="@drawable/account"
                     android:layout_marginStart="5dp" />
 
                 <ImageView

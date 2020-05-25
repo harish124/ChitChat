@@ -8,13 +8,13 @@ import android.view.animation.OvershootInterpolator
 import android.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.example.chitchat.adapter.FragmentChatsRVAdapter
 import com.example.chitchat.R
 import com.example.chitchat.databinding.FragmentChatsBinding
+import com.example.chitchat.harish_activities.adapter.FragmentChatsRVAdapter
 import com.example.chitchat.model.User
-
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -24,6 +24,7 @@ import frame_transition.Transition
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import print.Print
+import java.lang.Exception
 
 
 class FragmentChats : Fragment() {
@@ -80,8 +81,12 @@ class FragmentChats : Fragment() {
 
         })
 
+
+
         return binding!!.root
     }
+
+
 
     fun searchForThisString(str:String){
         database.getReference("Users")
@@ -142,10 +147,5 @@ class FragmentChats : Fragment() {
             })
     }
 
-
-    override fun onResume() {
-        super.onResume()
-        //fetchUsers()
-    }
 
 }

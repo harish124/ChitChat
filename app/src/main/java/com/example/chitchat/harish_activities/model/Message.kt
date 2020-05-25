@@ -5,5 +5,7 @@ data class Message(
     val fromId:String="",
     val toId:String="",
     var text:String="",
-    val time:Long=12345678
+    var seen:Int=0,
+    val date:String="",
+    val time:String=""
 )

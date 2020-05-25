@@ -1,9 +1,10 @@
-package com.example.chitchat.adapter
+package com.example.chitchat.harish_activities.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -18,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import print.Print
 
-class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:String=""): RecyclerView.Adapter<ChatMessageAdapter.MyViewHolder>() {
+class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:String="",var toUserUid: String=""): RecyclerView.Adapter<ChatMessageAdapter.MyViewHolder>() {
     var p: Print?=null
     var ctx: Context?=null
     private val database= FirebaseDatabase.getInstance()
@@ -52,8 +53,14 @@ class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:Strin
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val msg=products[position]
+        val productsSize=products.size
         val uid=FirebaseAuth.getInstance().uid
 
+
+        println("""
+                Pos = $position,
+                ProductsSize = $productsSize
+            """.trimIndent())
 
         if(msg.fromId==uid){
             val binding=holder.binding as ChatFromRowBinding
@@ -63,7 +70,12 @@ class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:Strin
                 .load(R.drawable.androidicon ?: "")
                 .centerCrop()
                 .into(binding.fromImg)
-
+            if(msg.seen==1){
+                binding.seenTxt.visibility=View.VISIBLE
+            }
+            else{
+                binding.seenTxt.visibility=View.INVISIBLE
+            }
         }
         else{
             val binding=holder.binding as ChatToRowBinding
@@ -72,38 +84,18 @@ class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:Strin
                 .load(toUserImgUrl ?: "")
                 .centerCrop()
                 .into(binding.toImg)
+            toUserUid=msg.fromId
+            //setSeen(toUserUid)
+
+            if(msg.seen==0){
+                msg.seen=1
+                database.getReference("messages/${msg.msgId}/seen").setValue(1)
+                    .addOnCompleteListener{
+                        println("Seen set")
+                    }
+            }
+
         }
-
-
-
-    }
-
-
-    private fun hasHeSeenMine(toUserUid: String) {
-        val seenRef=database.getReference("Seen/${FirebaseAuth.getInstance().uid}/${toUserUid}/hasSeen")
-        seenRef.addValueEventListener(object :ValueEventListener{
-            override fun onCancelled(p0: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onDataChange(p0: DataSnapshot) {
-                println("Adapter has seen: $p0")
-                if(p0.value =="1"){
-                    println("True Worked")
-                }
-            }
-
-        })
-
-    }
-
-    private fun setSeen(toUserUid:String) {
-        val seenRef=database.getReference("Seen/${FirebaseAuth.getInstance().uid}/${toUserUid}")
-        seenRef.child("hasSeen")
-            .setValue(1)
-            .addOnSuccessListener {
-                println("Seen set successfully")
-            }
     }
 
     override fun getItemViewType(position: Int): Int {
