@@ -4,8 +4,10 @@ import android.app.Activity
 import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.view.animation.OvershootInterpolator
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +16,7 @@ import com.example.chitchat.R
 import com.example.chitchat.databinding.ActivityChatMessageBinding
 import com.example.chitchat.harish_activities.adapter.ChatMessageAdapter
 import com.example.chitchat.harish_activities.ui.FirstScreen
+import com.example.chitchat.harish_activities.view_model.ChatMsgVM
 import com.example.chitchat.model.Message
 import com.example.chitchat.model.User
 import com.google.firebase.auth.FirebaseAuth
@@ -28,9 +31,12 @@ import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import print.Print
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 
 
-class ChatMessageActivity : Activity() {
+
+class ChatMessageActivity : AppCompatActivity() {
 
     private var binding: ActivityChatMessageBinding?=null
     private val mAuth = FirebaseAuth.getInstance()
@@ -39,6 +45,7 @@ class ChatMessageActivity : Activity() {
     private val messages= arrayListOf<Message>()
     private val mAdapter= ChatMessageAdapter(messages)
     private val p= Print(this)
+    private var vm:ChatMsgVM?=null
     var user:User?=null
     private var pos=-1
     private var swipedMsg:Message?=null
@@ -66,7 +73,7 @@ class ChatMessageActivity : Activity() {
     private fun init(){
         user=fetchUser()
         setStatus()
-
+        vm=ViewModelProvider(this).get(ChatMsgVM::class.java)
         binding!!.userName.text=user?.uname
         Glide.with(this)
             .load(user?.profile)
@@ -75,8 +82,70 @@ class ChatMessageActivity : Activity() {
         mAdapter.toUserImgUrl=user!!.profile
         mAdapter.toUserUid=user!!.uid
 
+        binding!!.vm=vm
         configRecyclerView()
         setItemTouchHelper()
+        listenOnlineStatus()
+        setObservers()
+
+        observeUserTyping()
+    }
+
+    private fun listenOnlineStatus() {
+        database.getReference("Users/${user?.uid}/status")
+            .addValueEventListener(object:ValueEventListener{
+                override fun onCancelled(p0: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onDataChange(p0: DataSnapshot) {
+                    if(p0.exists()){
+                        if(p0.value.toString()=="Online"){
+                            binding!!.onlineBall.visibility= View.VISIBLE
+                        }
+                        else{
+                            binding!!.onlineBall.visibility= View.INVISIBLE
+                        }
+                    }
+                }
+
+            })
+    }
+
+    private fun observeUserTyping() {
+        val ref=database.getReference("last_messages/${user?.uid}/${mAuth.uid}/isTyping")
+
+        ref.addValueEventListener(object:ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                if (p0.exists()) {
+                    if(p0.value.toString()=="1"){
+                        binding!!.userName.text="${user?.uname} is Typing..."
+                        binding!!.userName.setTextColor(Color.GREEN)
+                    }
+                    else{
+                        binding!!.userName.text="${user?.uname}"
+                        binding!!.userName.setTextColor(Color.WHITE)
+                    }
+                }
+            }
+
+        })
+    }
+
+    private fun setObservers() {
+        vm!!.txtMsg.observe(this, androidx.lifecycle.Observer{msg->
+            val ref=database.getReference("last_messages/${mAuth.uid}/${user?.uid}/isTyping")
+            if (msg.isBlank()) {
+                ref.setValue(0)
+            }
+            else{
+                ref.setValue(1)
+            }
+        })
     }
 
 
@@ -261,8 +330,16 @@ class ChatMessageActivity : Activity() {
         val lastMsgRef=database.getReference("last_messages/${mAuth.uid}/${user!!.uid}/lastMsg")
         val lastMsgRef2=database.getReference("last_messages/${user!!.uid}/${mAuth.uid}/lastMsg")
 
-        lastMsgRef.setValue(msg.text)
-        lastMsgRef2.setValue(msg.text)
+        val subMsg:String
+
+        if(msg.text.length>31){
+            subMsg="${msg.text.substring(0,30)}..."
+        }
+        else{
+            subMsg=msg.text
+        }
+        lastMsgRef.setValue("${subMsg}\n\nLast Seen: ${msg.date}")
+        lastMsgRef2.setValue("${subMsg}\n\nLast Seen: ${msg.date}")
 
     }
 

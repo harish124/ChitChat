@@ -1,9 +1,11 @@
 package com.example.chitchat.harish_activities.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.webkit.URLUtil
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
@@ -126,8 +128,34 @@ class FirstScreen : AppCompatActivity() {
             R.id.shareChitChat->{
                 shareMyApp()
             }
+            R.id.updateChitChat->{
+                updateChitChat()
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun updateChitChat() {
+        database.getReference("ShareAppLink").addListenerForSingleValueEvent(object :ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                if(p0.exists()){
+                    val url = p0.value.toString()
+                    if(!URLUtil.isValidUrl(url)){
+                        p.fprintf("Updates are not available!")
+                        return
+                    }
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(url)
+                    startActivity(intent)
+                }
+            }
+
+        })
+
     }
 
 }

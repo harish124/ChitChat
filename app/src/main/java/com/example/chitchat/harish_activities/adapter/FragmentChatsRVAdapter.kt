@@ -2,6 +2,7 @@ package com.example.chitchat.harish_activities.adapter
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,7 +22,7 @@ import com.google.firebase.database.ValueEventListener
 
 import print.Print
 
-class FragmentChatsRVAdapter(var products:ArrayList<User>):RecyclerView.Adapter<FragmentChatsRVAdapter.MyViewHolder>() {
+class FragmentChatsRVAdapter(val products:ArrayList<User>):RecyclerView.Adapter<FragmentChatsRVAdapter.MyViewHolder>() {
     var p:Print?=null
     var ctx:Context?=null
     private val mAuth= FirebaseAuth.getInstance()
@@ -58,6 +59,7 @@ class FragmentChatsRVAdapter(var products:ArrayList<User>):RecyclerView.Adapter<
             .into(holder.binding.profileImage)
 
         fetchLastMsg(user.uid,holder.binding.lastMsg)
+        observeUserTyping(user.uid,holder.binding.lastMsg)
 
         holder.binding.userCard.setOnClickListener {
             val intent= Intent(ctx, ChatMessageActivity::class.java)
@@ -86,5 +88,28 @@ class FragmentChatsRVAdapter(var products:ArrayList<User>):RecyclerView.Adapter<
         })
 
 
+    }
+    private fun observeUserTyping(toUserUid: String,lastMsg:TextView) {
+        val ref=database.getReference("last_messages/${toUserUid}/${mAuth.uid}/isTyping")
+
+        ref.addValueEventListener(object:ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                if (p0.exists()) {
+                    if(p0.value.toString()=="1"){
+                        lastMsg.text="Typing..."
+                        lastMsg.setTextColor(Color.RED)
+                    }
+                    else{
+                        fetchLastMsg(toUserUid,lastMsg)
+                        lastMsg.setTextColor(Color.BLACK)
+                    }
+                }
+            }
+
+        })
     }
 }

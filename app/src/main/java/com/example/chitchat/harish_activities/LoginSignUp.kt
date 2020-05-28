@@ -31,7 +31,7 @@ class LoginSignUp : Activity() {
     private fun checkAlreadySignedIn(){
         if(mAuth.currentUser!=null){
             transition.goTo(FirstScreen::class.java)
-            p.sprintf("Welcome Back ${mAuth.currentUser}")
+            //p.sprintf("Welcome Back ${mAuth.currentUser}")
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {

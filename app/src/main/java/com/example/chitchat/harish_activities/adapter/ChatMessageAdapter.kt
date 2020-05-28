@@ -1,9 +1,11 @@
 package com.example.chitchat.harish_activities.adapter
 
 import android.content.Context
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.URLUtil
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -62,6 +64,7 @@ class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:Strin
                 ProductsSize = $productsSize
             """.trimIndent())
 
+
         if(msg.fromId==uid){
             val binding=holder.binding as ChatFromRowBinding
             binding.txt.text=msg.text
@@ -80,6 +83,7 @@ class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:Strin
         else{
             val binding=holder.binding as ChatToRowBinding
             binding.txt.text=msg.text
+
             Glide.with(ctx!!)
                 .load(toUserImgUrl ?: "")
                 .centerCrop()

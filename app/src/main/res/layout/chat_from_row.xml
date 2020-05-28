@@ -32,6 +32,8 @@
                 android:layout_height="wrap_content"
                 android:padding="20dp"
                 android:paddingEnd="25dp"
+                android:autoLink="all"
+                android:clickable="true"
                 android:visibility="visible"
                 android:textColor="@color/white"
                 android:background="@drawable/rounded_from_msg_view"
@@ -43,7 +45,7 @@
                 android:layout_height="30dp"
                 android:layout_marginLeft="5dp"
                 android:layout_alignParentEnd="true"
-                android:background="@drawable/vijay" />
+                />
 
             <TextView
                 android:id="@+id/tick"

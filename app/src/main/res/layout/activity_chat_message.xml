@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="vm"
+            type="com.example.chitchat.harish_activities.view_model.ChatMsgVM" />
     </data>
 
     <RelativeLayout
@@ -56,6 +58,14 @@
                         android:text="Megha Akash"
                         android:textStyle="bold"
                         android:textColor="@color/white" />
+                    <ImageView
+                        android:id="@+id/onlineBall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="20dp"
+                        android:visibility="invisible"
+                        android:background="@drawable/green_ball"/>
                 </RelativeLayout>
 
             </androidx.appcompat.widget.Toolbar>
@@ -77,6 +87,7 @@
             android:background="@color/white"
             android:drawableStart="@drawable/ic_insert_emoticon_black_24dp"
             android:hint="Type Your Message Here..."
+            android:text="@={vm.txtMsg}"
             android:maxWidth="150dp"
             android:maxLines="4"
             android:padding="8dp"

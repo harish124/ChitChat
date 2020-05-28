@@ -10,6 +10,10 @@
         android:id="@+id/shareChitChat"
         android:title="Share App"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/updateChitChat"
+        android:title="Update App"
+        app:showAsAction="never"/>
 
 
 </menu>
