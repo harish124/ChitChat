@@ -3,7 +3,7 @@ package com.example.chitchat.adapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.example.chitchat.ui.GroupsFragment
+//import com.example.chitchat.harish_activities.ui.GroupsFragment
 import com.example.chitchat.harish_activities.ui.FragmentChats
 import com.example.chitchat.ui.SettingsFragment
 
@@ -12,7 +12,7 @@ class FragmentAdapter(fragmentManager:FragmentManager):FragmentPagerAdapter(frag
         when(position){
             0->return FragmentChats()
             2->return SettingsFragment()
-            1->return GroupsFragment()
+            1->return SettingsFragment()
 
         }
         return FragmentChats()

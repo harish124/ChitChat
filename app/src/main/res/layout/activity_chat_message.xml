@@ -34,6 +34,12 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/replyPos"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
                     <ImageView
                         android:id="@+id/back_btn"
                         android:layout_width="wrap_content"
@@ -78,6 +84,21 @@
             android:layout_above="@+id/txtMsg"
             android:layout_marginBottom="8dp"
             tools:listitem="@layout/chat_from_row" />
+
+        <TextView
+            android:id="@+id/repTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/txtMsg"
+            android:visibility="gone"
+            android:background="@color/black"
+            android:textColor="@color/white"
+            android:maxWidth="150dp"
+            android:maxLines="4"
+            android:padding="8dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="2dp"
+            android:drawableEnd="@drawable/ic_close_black_24dp"/>
 
         <EditText
             android:id="@+id/txtMsg"

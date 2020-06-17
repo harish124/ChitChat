@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.chitchat.R
 import com.example.chitchat.databinding.CardUsersBinding
-import com.example.chitchat.model.User
+import com.example.chitchat.harish_activities.model.User
 import com.example.chitchat.harish_activities.ui.message_acts.ChatMessageActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot

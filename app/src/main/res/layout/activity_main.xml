@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".LoginSignUp">
+        tools:context=".harish_activities.LoginSignUp">
 
         <EditText
             android:id="@+id/name"

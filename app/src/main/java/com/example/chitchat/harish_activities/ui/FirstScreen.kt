@@ -9,11 +9,11 @@ import android.webkit.URLUtil
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
-import com.example.chitchat.LoginSignUp
+import com.example.chitchat.harish_activities.LoginSignUp
 import com.example.chitchat.R
 import com.example.chitchat.adapter.FragmentAdapter
 import com.example.chitchat.databinding.ActivityFirstScreenBinding
-import com.example.chitchat.model.User
+import com.example.chitchat.harish_activities.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -43,7 +43,10 @@ class FirstScreen : AppCompatActivity() {
         supportActionBar!!.title="ChitChat"
         binding!!.viewPager.adapter=FragmentAdapter(supportFragmentManager)
         binding!!.tabLayout.setupWithViewPager(viewPager)
+
     }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

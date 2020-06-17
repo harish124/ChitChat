@@ -9,13 +9,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat">
+
+        <service
+            android:name=".harish_activities.notification.MyFirebaseIdService"
+            android:stopWithTask="false">
+            <intent-filter>
+
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
         <activity android:name=".harish_activities.ui.message_acts.ChatMessageActivity"
             android:theme="@style/myStyle"/>
         <activity
             android:name=".harish_activities.ui.FirstScreen"
             android:label="@string/title_activity_first_screen"
             android:theme="@style/myStyle"/>
-        <activity android:name=".LoginSignUp"
+        <activity android:name=".harish_activities.LoginSignUp"
             android:theme="@style/myStyle">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

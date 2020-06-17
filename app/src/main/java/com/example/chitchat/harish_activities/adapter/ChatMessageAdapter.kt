@@ -6,13 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.URLUtil
+import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.chitchat.R
+import com.example.chitchat.databinding.ActivityChatMessageBinding
 import com.example.chitchat.databinding.ChatFromRowBinding
 import com.example.chitchat.databinding.ChatToRowBinding
+import com.example.chitchat.harish_activities.ui.message_acts.ChatMessageActivity
 import com.example.chitchat.model.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -21,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import print.Print
 
-class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:String="",var toUserUid: String=""): RecyclerView.Adapter<ChatMessageAdapter.MyViewHolder>() {
+class ChatMessageAdapter(private val products:ArrayList<Message>, var toUserImgUrl:String="", var toUserUid: String="",var chatMsgActBinding: ActivityChatMessageBinding?=null): RecyclerView.Adapter<ChatMessageAdapter.MyViewHolder>() {
     var p: Print?=null
     var ctx: Context?=null
     private val database= FirebaseDatabase.getInstance()
@@ -67,8 +71,9 @@ class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:Strin
 
         if(msg.fromId==uid){
             val binding=holder.binding as ChatFromRowBinding
-            binding.txt.text=msg.text
 
+
+            setOnClickListener(binding.txt,position)
             Glide.with(ctx!!)
                 .load(R.drawable.androidicon ?: "")
                 .centerCrop()
@@ -79,10 +84,25 @@ class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:Strin
             else{
                 binding.seenTxt.visibility=View.INVISIBLE
             }
+
+
+            if(msg.reply==1){
+                println("Reply in chatmsgadapter ${msg.reply}\nmsg = ${msg.text}")
+                binding.repCardInner.visibility=View.VISIBLE
+                binding.repTxt.text=msg.replyMsg
+                setReplyTxtAreaOnClickListener(binding.repCardInner,msg.replyPos)
+            }
+            else{
+                binding.repCardInner.visibility=View.GONE
+            }
+            binding.txt.text=msg.text
         }
         else{
             val binding=holder.binding as ChatToRowBinding
-            binding.txt.text=msg.text
+
+            setOnClickListener(binding.txt,position)
+
+
 
             Glide.with(ctx!!)
                 .load(toUserImgUrl ?: "")
@@ -99,8 +119,43 @@ class ChatMessageAdapter(val products:ArrayList<Message>, var toUserImgUrl:Strin
                     }
             }
 
+            if(msg.reply==1){
+                println("Reply in chatmsgadapter ${msg.reply}\nmsg = ${msg.text}")
+                binding.repCardInner.visibility=View.VISIBLE
+                binding.repTxt.text=msg.replyMsg
+                setReplyTxtAreaOnClickListener(binding.repCardInner,msg.replyPos)
+            }
+            else{
+                binding.repCardInner.visibility=View.GONE
+            }
+            binding.txt.text=msg.text
+
         }
     }
+
+    private fun setReplyTxtAreaOnClickListener(tv: CardView, pos:Int){
+        tv.setOnClickListener {
+            chatMsgActBinding!!.recyclerView.smoothScrollToPosition(pos)
+        }
+
+    }
+
+    private fun setOnClickListener(tv: TextView,pos: Int,userName:String="") {
+        tv.setOnClickListener {
+            chatMsgActBinding!!.repTxt.visibility=View.VISIBLE
+
+            val subMsg = if(tv.text.length>31){
+                "${tv.text.substring(0,30)}..."
+            } else{
+                "${tv.text.toString()}..."
+            }
+
+            chatMsgActBinding!!.repTxt.text=subMsg
+            chatMsgActBinding!!.replyPos.text=pos.toString()
+
+        }
+    }
+
 
     override fun getItemViewType(position: Int): Int {
         val msg=products[position]

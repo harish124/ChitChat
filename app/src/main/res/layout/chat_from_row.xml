@@ -5,6 +5,7 @@
 
     <data>
 
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,9 +13,10 @@
         android:layout_height="wrap_content">
 
         <RelativeLayout
+            android:id="@+id/chatFromRowRL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_margin="5dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -24,10 +26,9 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.024">
 
-            <TextView
-                android:id="@+id/txt"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/replyCard"
                 android:layout_width="wrap_content"
-                android:text="Hello MA!dfghjkjhfxcvbnmncxcvbnmnbvcxmnbvcvbnbvcnnvcxcvbnbvcxcvbnbvckjhgfdscjhgfdcvnmnvcxcvbn"
                 android:layout_toStartOf="@+id/fromImg"
                 android:layout_height="wrap_content"
                 android:padding="20dp"
@@ -36,8 +37,75 @@
                 android:clickable="true"
                 android:visibility="visible"
                 android:textColor="@color/white"
-                android:background="@drawable/rounded_from_msg_view"
-                android:maxWidth="240dp" />
+                app:cardBackgroundColor="@color/colorPrimary"
+                app:cardCornerRadius="10dp"
+                android:maxWidth="240dp" >
+
+                <LinearLayout
+                    android:id="@+id/repCardOutterRelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:weightSum="2">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/repCardInner"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_margin="10dp"
+                        android:padding="5dp"
+                        android:textColor="@color/white"
+                        app:cardBackgroundColor="@color/grey"
+                        app:cardCornerRadius="5dp"
+                        android:layout_weight="1">
+
+                        <LinearLayout
+                            android:id="@+id/replyCardInnerRelativeLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
+                            <View
+                                android:id="@+id/vertical_covid_stats"
+                                android:layout_width="5dp"
+                                android:layout_height="match_parent"
+                                android:layout_margin="5dp"
+                                android:background="@color/black"
+                                android:layout_weight=".05"/>
+
+                            <TextView
+                                android:id="@+id/repTxt"
+                                android:layout_weight="1.95"
+                                android:layout_width="wrap_content"
+                                android:lines="1"
+                                android:layout_height="wrap_content"
+                                android:padding="5dp"
+                                android:layout_marginStart="4dp"
+                                android:textColor="@color/black" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:autoLink="all"
+                        android:clickable="true"
+                        android:maxWidth="240dp"
+                        android:padding="5dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="25dp"
+                        android:text="Hello MA!dfghjkjhfxcvbnmncxcvbnmnbvcxmnbvcvbnbvcnnvcxcvbnbvcxcvbnbvckjhgfdscjhgfdcvnmnvcxcvbn"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/fromImg"
@@ -56,14 +124,14 @@
                 android:text="Seen"
                 android:visibility="invisible"
                 android:textSize="10sp"
-                android:layout_below="@+id/txt"/>
+                android:layout_below="@+id/replyCard"/>
 
 
             <TextView
                 android:id="@+id/seenTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/txt"
+                android:layout_below="@+id/replyCard"
                 android:layout_alignParentEnd="true"
                 android:text="Seen"
                 android:textColor="@color/black"

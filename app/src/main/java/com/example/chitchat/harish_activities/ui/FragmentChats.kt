@@ -8,13 +8,12 @@ import android.view.animation.OvershootInterpolator
 import android.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.chitchat.R
 import com.example.chitchat.databinding.FragmentChatsBinding
 import com.example.chitchat.harish_activities.adapter.FragmentChatsRVAdapter
-import com.example.chitchat.model.User
+import com.example.chitchat.harish_activities.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -24,7 +23,6 @@ import frame_transition.Transition
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import print.Print
-import java.lang.Exception
 
 
 class FragmentChats : Fragment() {
@@ -46,13 +44,14 @@ class FragmentChats : Fragment() {
         binding?.recyclerView?.layoutManager = StaggeredGridLayoutManager(2,RecyclerView.VERTICAL)
         //binding?.recyclerView?.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
 
-        binding?.recyclerView?.adapter = ScaleInAnimationAdapter(adapter).apply{
-            setFirstOnly(false)
-            setDuration(1000)
-            setHasStableIds(false)
-            setInterpolator(OvershootInterpolator(.100f))
-        }
-        binding?.recyclerView?.itemAnimator= SlideInUpAnimator(OvershootInterpolator(1f))
+        binding?.recyclerView?.adapter=adapter
+//        binding?.recyclerView?.adapter = ScaleInAnimationAdapter(adapter).apply{
+//            setFirstOnly(false)
+//            setDuration(1000)
+//            setHasStableIds(false)
+//            setInterpolator(OvershootInterpolator(.100f))
+//        }
+        //binding?.recyclerView?.itemAnimator= SlideInUpAnimator(OvershootInterpolator(1f))
     }
 
     override fun onCreateView(
@@ -101,7 +100,7 @@ class FragmentChats : Fragment() {
                         adapter.notifyDataSetChanged()
                         var i=0
                         for(users in usersList.children){
-                            val user=users?.getValue(User::class.java) ?:User("SomethingWentWrong")
+                            val user=users?.getValue(User::class.java) ?: User("SomethingWentWrong")
                             if(user.uid!=mAuth.currentUser?.uid){
                                 if(user.uname.toLowerCase().contains(str)) {
                                     //p?.sprintf("Uname = ${user.uname}")
@@ -130,7 +129,7 @@ class FragmentChats : Fragment() {
                         adapter.notifyDataSetChanged()
                         var i=0
                         for(users in usersList.children){
-                            val user:User=users?.getValue(User::class.java)?:User("SomethingWentWrong")
+                            val user: User =users?.getValue(User::class.java)?: User("SomethingWentWrong")
 
 
 

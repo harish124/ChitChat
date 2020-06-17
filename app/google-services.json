@@ -42,43 +42,6 @@
           ]
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:577246660362:android:ca9a77a68dcf24bd0a9cf3",
-        "android_client_info": {
-          "package_name": "com.example.gossip"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "577246660362-d5jh5e3jc0b41e65qktl1ahdfj24cbqf.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.gossip",
-            "certificate_hash": "2be4e7526e0d239434b63472040a4ca23d790368"
-          }
-        },
-        {
-          "client_id": "577246660362-91khr032ktcmhcc1gfvv9abf3fsf7vi0.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA48HKeGCEJplwrrtpNSEoMCq8nA-9JGss"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "577246660362-91khr032ktcmhcc1gfvv9abf3fsf7vi0.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
     }
   ],
   "configuration_version": "1"

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="pd"
-            type="com.example.chitchat.model.User" />
+            type="com.example.chitchat.harish_activities.model.User" />
     </data>
 
     <RelativeLayout

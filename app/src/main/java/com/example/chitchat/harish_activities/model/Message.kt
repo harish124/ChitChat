@@ -7,5 +7,8 @@ data class Message(
     var text:String="",
     var seen:Int=0,
     val date:String="",
-    val time:String=""
+    val time:String="",
+    val reply: Int =0,
+    val replyMsg:String="",
+    val replyPos:Int=-1
 )
