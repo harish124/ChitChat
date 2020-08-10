@@ -91,6 +91,7 @@
                         android:layout_weight="1"
                         android:autoLink="all"
                         android:clickable="true"
+                        android:textColorLink="@color/red"
                         android:maxWidth="240dp"
                         android:padding="5dp"
                         android:paddingStart="10dp"

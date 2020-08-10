@@ -1,12 +1,9 @@
 package com.example.chitchat.harish_activities.adapter
 
 import android.content.Context
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.URLUtil
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.databinding.DataBindingUtil
@@ -16,16 +13,12 @@ import com.example.chitchat.R
 import com.example.chitchat.databinding.ActivityChatMessageBinding
 import com.example.chitchat.databinding.ChatFromRowBinding
 import com.example.chitchat.databinding.ChatToRowBinding
-import com.example.chitchat.harish_activities.ui.message_acts.ChatMessageActivity
-import com.example.chitchat.model.Message
+import com.example.chitchat.harish_activities.model.Message
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import print.Print
 
-class ChatMessageAdapter(private val products:ArrayList<Message>, var toUserImgUrl:String="", var toUserUid: String="",var chatMsgActBinding: ActivityChatMessageBinding?=null): RecyclerView.Adapter<ChatMessageAdapter.MyViewHolder>() {
+class ChatMessageAdapter(private val products:ArrayList<Message>, var toUserImgUrl:String="", var toUserUid: String="", var chatMsgActBinding: ActivityChatMessageBinding?=null): RecyclerView.Adapter<ChatMessageAdapter.MyViewHolder>() {
     var p: Print?=null
     var ctx: Context?=null
     private val database= FirebaseDatabase.getInstance()
@@ -69,66 +62,86 @@ class ChatMessageAdapter(private val products:ArrayList<Message>, var toUserImgU
             """.trimIndent())
 
 
-        if(msg.fromId==uid){
+        if((msg.fromId==uid)){
             val binding=holder.binding as ChatFromRowBinding
+            println("""
+                Msg = $msg
+            """.trimIndent())
+            if ((msg.delete==0) or (msg.delete==2)) {
+
+                setOnClickListener(binding.txt,position)
+                Glide.with(ctx!!)
+                    .load(R.drawable.androidicon ?: "")
+                    .centerCrop()
+                    .into(binding.fromImg)
+                if(msg.seen==1){
+                    binding.seenTxt.visibility=View.VISIBLE
+                }
+                else{
+                    binding.seenTxt.visibility=View.INVISIBLE
+                }
 
 
-            setOnClickListener(binding.txt,position)
-            Glide.with(ctx!!)
-                .load(R.drawable.androidicon ?: "")
-                .centerCrop()
-                .into(binding.fromImg)
-            if(msg.seen==1){
-                binding.seenTxt.visibility=View.VISIBLE
-            }
-            else{
-                binding.seenTxt.visibility=View.INVISIBLE
-            }
+                if(msg.replyPos!=-1){
+                    println("Reply in chatmsgadapter ${msg.replyPos}\nmsg = ${msg.text}")
+                    binding.repCardInner.visibility=View.VISIBLE
+                    binding.repTxt.text=msg.replyMsg
+                    setReplyTxtAreaOnClickListener(binding.repCardInner,msg.replyPos)
+                }
+                else{
+                    binding.repCardInner.visibility=View.GONE
+                }
+                binding.txt.text=msg.text
+            } else {
 
-
-            if(msg.reply==1){
-                println("Reply in chatmsgadapter ${msg.reply}\nmsg = ${msg.text}")
-                binding.repCardInner.visibility=View.VISIBLE
-                binding.repTxt.text=msg.replyMsg
-                setReplyTxtAreaOnClickListener(binding.repCardInner,msg.replyPos)
-            }
-            else{
+                binding.txt.text="This msg is deleted"
                 binding.repCardInner.visibility=View.GONE
+                Glide.with(ctx!!)
+                    .load(R.drawable.androidicon ?: "")
+                    .centerCrop()
+                    .into(binding.fromImg)
+
             }
-            binding.txt.text=msg.text
         }
         else{
             val binding=holder.binding as ChatToRowBinding
 
-            setOnClickListener(binding.txt,position)
+            if ((msg.delete==0) or (msg.delete==1)) {
+                setOnClickListener(binding.txt,position)
+                Glide.with(ctx!!)
+                    .load(toUserImgUrl ?: "")
+                    .centerCrop()
+                    .into(binding.toImg)
+                toUserUid=msg.fromId
+                //setSeen(toUserUid)
 
+                if(msg.seen==0){
+                    msg.seen=1
+                    database.getReference("messages/${msg.msgId}/seen").setValue(1)
+                        .addOnCompleteListener{
+                            println("Seen set")
+                        }
+                }
 
-
-            Glide.with(ctx!!)
-                .load(toUserImgUrl ?: "")
-                .centerCrop()
-                .into(binding.toImg)
-            toUserUid=msg.fromId
-            //setSeen(toUserUid)
-
-            if(msg.seen==0){
-                msg.seen=1
-                database.getReference("messages/${msg.msgId}/seen").setValue(1)
-                    .addOnCompleteListener{
-                        println("Seen set")
-                    }
-            }
-
-            if(msg.reply==1){
-                println("Reply in chatmsgadapter ${msg.reply}\nmsg = ${msg.text}")
-                binding.repCardInner.visibility=View.VISIBLE
-                binding.repTxt.text=msg.replyMsg
-                setReplyTxtAreaOnClickListener(binding.repCardInner,msg.replyPos)
-            }
-            else{
+                if(msg.replyPos!=-1){
+                    println("Reply in chatmsgadapter ${msg.replyPos}\nmsg = ${msg.text}")
+                    binding.repCardInner.visibility=View.VISIBLE
+                    binding.repTxt.text=msg.replyMsg
+                    setReplyTxtAreaOnClickListener(binding.repCardInner,msg.replyPos)
+                }
+                else{
+                    binding.repCardInner.visibility=View.GONE
+                }
+                binding.txt.text=msg.text
+            } else {
+                Glide.with(ctx!!)
+                    .load(toUserImgUrl ?: "")
+                    .centerCrop()
+                    .into(binding.toImg)
+                toUserUid=msg.fromId
+                binding.txt.text="This msg is deleted"
                 binding.repCardInner.visibility=View.GONE
             }
-            binding.txt.text=msg.text
 
         }
     }

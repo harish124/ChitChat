@@ -27,9 +27,7 @@ import print.Print
 class FirstScreen : AppCompatActivity() {
 
     private var binding:ActivityFirstScreenBinding?=null
-
     private val p= Print(this)
-
     private val mAuth = FirebaseAuth.getInstance()
     private val transition= Transition(this)
     private val database= FirebaseDatabase.getInstance()

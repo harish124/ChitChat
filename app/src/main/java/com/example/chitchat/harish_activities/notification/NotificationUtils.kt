@@ -1,5 +1,6 @@
 package com.example.chitchat.harish_activities.notification
 
+import com.example.chitchat.harish_activities.model.User
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,7 +17,8 @@ data class Data(
     val icon:Int=0,
     val body:String="",
     val title:String="",
-    val sent:String=""
+    val sent:String="",
+    val sender:User=User()
 )
 
 data class NotificationSender(

@@ -1,5 +1,6 @@
 package com.example.chitchat.harish_activities.ui.message_acts
 
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
@@ -19,13 +20,12 @@ import com.example.chitchat.harish_activities.model.User
 import com.example.chitchat.harish_activities.notification.*
 import com.example.chitchat.harish_activities.ui.FirstScreen
 import com.example.chitchat.harish_activities.view_model.ChatMsgVM
-import com.example.chitchat.model.Message
+import com.example.chitchat.harish_activities.model.Message
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.iid.FirebaseInstanceId
 import frame_transition.Transition
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import libs.mjn.prettydialog.PrettyDialog
 import libs.mjn.prettydialog.PrettyDialogCallback
@@ -91,7 +91,14 @@ class ChatMessageActivity : AppCompatActivity() {
     private fun setStatus(status:String="Offline")= database.getReference("Users/${mAuth.uid}/status").setValue(status)
 
     private fun init(){
-        user=fetchUser()!!
+        try {
+            user=fetchUser()!!
+        } catch (e: Exception) {
+            println("First fetch failed\n${e.message}")
+            val intent=Intent(this,FirstScreen::class.java)
+            startActivity(intent)
+            this.finish()
+        }
         fetchMe()
         fetchDeviceToken()
         setStatus()
@@ -153,7 +160,7 @@ class ChatMessageActivity : AppCompatActivity() {
     }
 
     private fun observeUserTyping() {
-        val ref=database.getReference("last_messages/${user?.uid}/${mAuth.uid}/isTyping")
+        val ref=database.getReference("last_messages/${user.uid}/${mAuth.uid}/isTyping")
 
         ref.addValueEventListener(object:ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
@@ -163,11 +170,11 @@ class ChatMessageActivity : AppCompatActivity() {
             override fun onDataChange(p0: DataSnapshot) {
                 if (p0.exists()) {
                     if(p0.value.toString()=="1"){
-                        binding!!.userName.text="${user?.uname} is Typing..."
+                        binding!!.userName.text="${user.uname} is Typing..."
                         binding!!.userName.setTextColor(Color.GREEN)
                     }
                     else{
-                        binding!!.userName.text="${user?.uname}"
+                        binding!!.userName.text="${user.uname}"
                         binding!!.userName.setTextColor(Color.WHITE)
                     }
                 }
@@ -204,13 +211,16 @@ class ChatMessageActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        super.onPause()
         try {
             database.getReference("messages")
                 .removeEventListener(objValEventListener!!)
+
         }
         catch (e:java.lang.Exception){
             println("\nNot a big error\n${e.message}")
+        }
+        finally {
+            super.onPause()
         }
 
         setStatus("0")
@@ -240,7 +250,6 @@ class ChatMessageActivity : AppCompatActivity() {
     }
 
     private fun listenForMessages(toUserUid:String) {
-
         objValEventListener=object :ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
                 TODO("Not yet implemented")
@@ -261,9 +270,11 @@ class ChatMessageActivity : AppCompatActivity() {
                         }
                         else if((msg.fromId==toUserUid) and (msg.toId==mAuth.uid)) {
                             println("From him: $msg")
+
                             messages.add(msg)
                             mAdapter.notifyItemInserted(i)
                             i += 1
+
                         }
                     }
                 }
@@ -272,10 +283,54 @@ class ChatMessageActivity : AppCompatActivity() {
 
         }
 
+        val objChildEventListener=object:ChildEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("Not yet implemented")
+            }
 
+            override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                println("""
+                    onChildChanged:
+                    ${p0.value}
+                    ${messages.contains(p0.getValue(Message::class.java))}
+                """.trimIndent())
+                mAdapter.notifyDataSetChanged()
+            }
+
+            override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+                if(p0.exists()){
+                    val msg=p0.getValue(Message::class.java) ?: Message(text="Error in Retrieving Data")
+                    if((msg.toId==toUserUid) and (msg.fromId==mAuth.uid)) {
+                        println("From me: $msg")
+                        messages.add(msg)
+                        mAdapter.notifyItemInserted(mAdapter.itemCount+1)
+                    }
+                    else if((msg.fromId==toUserUid) and (msg.toId==mAuth.uid)) {
+                        println("From him: $msg")
+                        messages.add(msg)
+                        mAdapter.notifyItemInserted(mAdapter.itemCount+1)
+                    }
+
+
+                }
+            }
+
+            override fun onChildRemoved(p0: DataSnapshot) {
+                println("""
+                    OnChildRemoved:
+                    ${p0.value}
+                    
+                """.trimIndent())
+            }
+
+        }
         database.getReference("messages")
-            .addValueEventListener(objValEventListener!!)
-
+            //.addValueEventListener(objValEventListener!!)
+            .addChildEventListener(objChildEventListener)
     }
 
     private fun setItemTouchHelper() {
@@ -294,47 +349,107 @@ class ChatMessageActivity : AppCompatActivity() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     pos=viewHolder.adapterPosition
                     try{
-
                         if(direction==ItemTouchHelper.RIGHT){
-                            deletedMsg=messages.get(pos)
-
-                            if(deletedMsg.fromId!=mAuth.uid){
-                                return
-                            }
-
-                            messages.removeAt(pos)
-                            mAdapter.notifyItemRemoved(pos)
+                            var flag=false
+                            deletedMsg=messages[pos]
                             val pd=PrettyDialog(this@ChatMessageActivity)
+                            if (deletedMsg.fromId==mAuth.uid) {
+                                if(deletedMsg.delete==1){
+                                    return
+                                }
+                                pd.setTitle("Delete")
+                                    .setIcon(R.drawable.pdlg_icon_info)
+                                    .setMessage("Do you want to delete this msg?\n\"${deletedMsg.text}\"")
+                                    .addButton(
+                                        "Delete for me",					// button text
+                                        R.color.pdlg_color_white,		// button text color
+                                        R.color.pdlg_color_green,		// button background color
+                                        PrettyDialogCallback {
+                                            //p.sprintf("Deleted")
+                                            println("Deleted")
+                                            messages.removeAt(pos)
+                                            mAdapter.notifyItemRemoved(pos)
+                                            pd.dismiss()
+                                            flag=true
+                                            if(deletedMsg.delete==2){
+                                                deleteMessageFromFb(deletedMsg,3)
+                                            }
+                                            else{
+                                                deleteMessageFromFb(deletedMsg,1)
+                                            }
+                                        }
+                                    )
+                                    .addButton(
+                                        "Delete for everyone",					// button text
+                                        R.color.pdlg_color_white,		// button text color
+                                        R.color.pdlg_color_green,		// button background color
+                                        PrettyDialogCallback {
+                                            //p.sprintf("Deleted")
+                                            println("Deleted")
+                                            messages.removeAt(pos)
+                                            mAdapter.notifyItemRemoved(pos)
+                                            pd.dismiss()
+                                            flag=true
+                                            deleteMessageFromFb(deletedMsg,3)
+                                        }
+                                    )
+                                    .addButton(
+                                        "Cancel",					// button text
+                                        R.color.pdlg_color_white,		// button text color
+                                        R.color.pdlg_color_green,		// button background color
+                                        PrettyDialogCallback {
+                                            //p.sprintf("Cancelled")
+                                            println("Cancelled")
+                                            pd.dismiss()
+                                        }
+                                    )
+                                pd.setCancelable(false)
+                                pd.setCanceledOnTouchOutside(false)
+                                pd.show()
 
-                            pd.setTitle("Delete")
-                                .setIcon(R.drawable.pdlg_icon_info)
-                                .setMessage("Do you want to delete this msg?\n\"${deletedMsg.text}\"")
 
-                                .addButton(
-                                    "OK",					// button text
-                                    R.color.pdlg_color_white,		// button text color
-                                    R.color.pdlg_color_green,		// button background color
-                                    PrettyDialogCallback {
-                                        //p.sprintf("Deleted")
-                                        println("Deleted")
-                                        pd.dismiss()
-                                    }
-                                )
-                                .addButton(
-                                    "Cancel",					// button text
-                                    R.color.pdlg_color_white,		// button text color
-                                    R.color.pdlg_color_green,		// button background color
-                                    PrettyDialogCallback {
-                                        //p.sprintf("Cancelled")
-                                        println("Cancelled")
-                                        messages.add(pos,deletedMsg)
-                                        mAdapter.notifyItemInserted(pos)
-                                        pd.dismiss()
-                                    }
-                                )
-                                .show()
+                            }
+                            else {
+                                if(deletedMsg.delete==2){
+                                    return
+                                }
+                                pd.setTitle("Delete for me")
+                                    .setIcon(R.drawable.pdlg_icon_info)
+                                    .setMessage("Do you want to delete this msg?\n\"${deletedMsg.text}\"")
+                                    .addButton(
+                                        "OK",					// button text
+                                        R.color.pdlg_color_white,		// button text color
+                                        R.color.pdlg_color_green,		// button background color
+                                        PrettyDialogCallback {
+                                            //p.sprintf("Deleted")
+                                            println("Deleted")
+                                            messages.removeAt(pos)
+                                            mAdapter.notifyItemRemoved(pos)
+                                            pd.dismiss()
+                                            flag=true
 
-
+                                            if(deletedMsg.delete==1){
+                                                deleteMessageFromFb(deletedMsg,3)
+                                            }
+                                            else{
+                                                deleteMessageFromFb(deletedMsg,2)
+                                            }
+                                        }
+                                    )
+                                    .addButton(
+                                        "Cancel",					// button text
+                                        R.color.pdlg_color_white,		// button text color
+                                        R.color.pdlg_color_green,		// button background color
+                                        PrettyDialogCallback {
+                                            //p.sprintf("Cancelled")
+                                            println("Cancelled")
+                                            pd.dismiss()
+                                        }
+                                    )
+                                pd.setCancelable(false)
+                                pd.setCanceledOnTouchOutside(false)
+                                pd.show()
+                            }
                         }
                     }
                     catch (e: Exception){
@@ -423,24 +538,37 @@ class ChatMessageActivity : AppCompatActivity() {
 
     }
 
-    private fun constructMessage(key:String=""):Message{
+    private fun deleteMessageFromFb(msg:Message,whom:Int) {
+        if (whom==3) {
+            database.getReference("messages/${msg.msgId}")
+                .removeValue()
+                .addOnSuccessListener {
+                    println("Message Deleted from FB successfully")
+                }
+        } else {
+            database.getReference("messages/${msg.msgId}/delete")
+                .setValue(whom)
+                .addOnSuccessListener {
+                    println("Message Deleted locally successfully")
+                }
+        }
+    }
+
+    private fun constructMessage(key:String=""): Message {
         val currentDate =
             SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
         val currentTime =
             SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
 
         var repMsg=""
-        var replyPos=0
-        val reply= if(binding!!.repTxt.visibility==View.VISIBLE){
+        var replyPos=-1
+        if(binding!!.repTxt.visibility==View.VISIBLE){
             println("Reply==1 in chatmsgact")
             repMsg=binding!!.repTxt.text.toString()
             binding!!.repTxt.visibility=View.GONE
             replyPos=Integer.parseInt(binding!!.replyPos.text.toString())
-            1
         }
-        else{
-            0
-        }
+
 
         return Message(
             key,
@@ -449,7 +577,7 @@ class ChatMessageActivity : AppCompatActivity() {
             binding!!.txtMsg.text.toString(),
             0,currentDate,
             currentTime,
-            reply,
+            0,
             repMsg,
             replyPos
         )
@@ -465,19 +593,16 @@ class ChatMessageActivity : AppCompatActivity() {
         .addOnFailureListener { e->
             println("Error in sending msg: ${e.message}")
         }
-
         //setting Last Message
         setLastMsg(msg)
-
         if(binding!!.onlineBall.visibility==View.INVISIBLE){
             sendNotification(me.uname,msg.text,user.deviceToken)
         }
     }
 
     private fun sendNotification(title: String, msg: String, toDeviceToken: String) {
-        val data= Data(title=title,body=msg)
+        val data= Data(title=title,body=msg,sender = me)
         val notificationSender=NotificationSender(data,toDeviceToken)
-
 
         apiService?.sendNotification(notificationSender)?.enqueue(object : retrofit2.Callback<MyResponse> {
             override fun onFailure(call: Call<MyResponse>, t: Throwable) {

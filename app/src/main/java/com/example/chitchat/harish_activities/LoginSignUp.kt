@@ -1,6 +1,7 @@
 package com.example.chitchat.harish_activities
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -120,7 +121,9 @@ class LoginSignUp : Activity() {
                 if(task.isSuccessful){
                     p.sprintf("Sign In Successful")
                     updateToken()
-                    transition.goTo(FirstScreen::class.java)
+                    val intent= Intent(this,FirstScreen::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
 
                 } else {
                     p.fprintf("Sign In Failed\nError ${task.exception?.message}")
